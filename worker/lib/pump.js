@@ -5,19 +5,10 @@ import bs58 from 'bs58';
 const WEBSITE = 'https://useswarms.fun/';
 const TWITTER = 'https://x.com/swarmsfun';
 
-// Generates the coin image. Pollinations is free and needs no key.
-export async function makeImage(prompt) {
-  const url = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=512&height=512&nologo=true&seed=${Math.floor(Math.random() * 1e9)}`;
-  const res = await fetch(url);
-  if (!res.ok) throw new Error(`image gen failed ${res.status}`);
-  const buf = Buffer.from(await res.arrayBuffer());
-  return { buf, type: res.headers.get('content-type') || 'image/jpeg' };
-}
-
 // Uploads image + metadata to pump.fun IPFS, returns the metadata URI.
 async function uploadMetadata(coin, image) {
   const form = new FormData();
-  form.append('file', new Blob([image.buf], { type: image.type }), 'image.jpg');
+  form.append('file', new Blob([image.buf], { type: image.type }), 'image.' + ((image.type.split('/')[1] || 'png').replace('jpeg', 'jpg')));
   form.append('name', coin.name);
   form.append('symbol', coin.symbol);
   form.append('description', coin.description);

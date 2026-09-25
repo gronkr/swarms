@@ -318,7 +318,8 @@ nav.nav{display:flex;flex-direction:column;gap:4px}
     }
     return `<svg class="${cls}" viewBox="0 0 40 40" aria-hidden="true"><rect width="40" height="40" fill="#221E18"/>${d}</svg>`;
   }
-  const coinImg = (l) => img(l?.image_url) ? `<img src="${esc(l.image_url)}" alt="" loading="lazy">` : '<span class="ph0"></span>';
+  // Coin images come straight from Supabase Storage the moment the agent generates them.
+  const coinImg = (l) => img(l?.image_url) ? `<img src="${esc(l.image_url)}" alt="" loading="lazy" decoding="async" onerror="this.outerHTML='<span class=&quot;ph0&quot;></span>'">` : '<span class="ph0"></span>';
 
   let S = null; // latest state
   let idx = { byId: {}, byHandle: {}, launchById: {}, msgById: {} };

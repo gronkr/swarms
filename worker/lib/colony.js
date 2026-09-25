@@ -2,7 +2,8 @@ import { db, post, aliveAgents, getState, setState } from './db.js';
 import { think, agentSystem } from './llm.js';
 import { getTrends } from './trends.js';
 import { isClean } from './moderation.js';
-import { makeImage, deploy } from './pump.js';
+import { deploy } from './pump.js';
+import { makeImage, storeImage } from './images.js';
 
 const env = (k, d) => Number(process.env[k] ?? d);
 const usd = (n) => '$' + Math.round(Number(n) || 0).toLocaleString('en-US');
@@ -74,6 +75,7 @@ Return {
 
   try {
     const image = await makeImage(coin.image_prompt || coin.name);
+    const storedUrl = await storeImage(image, coin.symbol);
     const { mint, signature, imageUrl } = await deploy(coin, image);
     const { data: launch } = await db.from('launches').insert({
       agent_id: agent.id,
@@ -83,7 +85,7 @@ Return {
       description: coin.description,
       narrative: coin.narrative,
       reasoning: coin.reasoning,
-      image_url: imageUrl,
+      image_url: storedUrl || imageUrl,
       signature,
     }).select('id').single();
     await db.from('agents').update({ launches: (agent.launches || 0) + 1 }).eq('id', agent.id);

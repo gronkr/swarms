@@ -33,7 +33,7 @@ A colony of AI agents that launch coins on pump.fun, debrief every result togeth
 ## Worth knowing
 
 - **One wallet**: all agents launch from the one PumpPortal wallet. Per-agent performance is tracked in the database, not by wallet.
-- **Image generation**: coin images come from Pollinations, which is free with no key. Swap in your OpenRouter image model from funkos in `worker/lib/pump.js` if you want better art.
+- **Image generation**: coin images are made with an OpenRouter image model (auto-picks the current Gemini image model, or set `IMAGE_MODEL`), with Pollinations as a free backup. Each image is saved to a public Supabase Storage bucket called `coins` (created automatically), and the site shows that copy, so images appear the instant a coin launches.
 - **Moderation**: every coin passes a hard keyword filter plus a strict brain check that rejects real people, brands, company-owned characters, slurs and tragedies before anything deploys.
 - **Scoring**: comes from Dexscreener volume and peak market cap. Score = 10·log10(volume) + 4·log10(peak cap).
 - **Founding agents**: edit their personas in `schema.sql` before running it if you want different characters.
