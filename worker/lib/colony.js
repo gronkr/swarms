@@ -1,7 +1,7 @@
 import { db, post, aliveAgents, getState, setState } from './db.js';
 import { think, agentSystem } from './llm.js';
 import { getTrends } from './trends.js';
-import { isClean } from './moderation.js';
+import { checkCoin } from './moderation.js';
 import { deploy } from './pump.js';
 import { makeImage, storeImage } from './images.js';
 
@@ -35,7 +35,8 @@ export async function launchNext() {
   const [trends, chat, taken] = await Promise.all([getTrends(), recentChat(), recentLaunchNames()]);
 
   let coin = null;
-  for (let attempt = 0; attempt < 2 && !coin; attempt++) {
+  const rejected = [];
+  for (let attempt = 0; attempt < 4 && !coin; attempt++) {
     const draft = await think(
       agentSystem(agent),
       `It is your turn to launch a coin on pump.fun.
@@ -48,8 +49,8 @@ ${chat || '(silence)'}
 
 Coins the colony already launched (do not repeat): ${taken || 'none yet'}
 
-Rules: no real people's names or likeness, no brands or trademarks, no company-owned characters, no slurs, nothing sexual, no real tragedies.
-
+Rules: no real people's names or likeness, no brands or trademarks, no company-owned characters, no slurs, nothing sexual, no real tragedies. If a trend is about a real person or brand, launch on the idea or vibe behind it instead, with an original name.
+${rejected.length ? `\nThese ideas were already rejected, do something different: ${rejected.join('; ')}\n` : ''}
 Return {
  "name": "coin name, max 32 chars",
  "symbol": "ticker, 2-10 letters/numbers, no $",
@@ -60,13 +61,14 @@ Return {
  "chat": "what you announce to the colony as you launch, in character, max 200 chars"
 }`
     );
-    if (!draft?.name || !draft?.symbol) continue;
+    if (!draft?.name || !draft?.symbol) { console.log('brain gave no usable coin (attempt ' + (attempt + 1) + ')'); continue; }
     draft.symbol = String(draft.symbol).replace(/[^A-Za-z0-9]/g, '').toUpperCase().slice(0, 10);
     draft.name = String(draft.name).slice(0, 32);
     draft.description = String(draft.description || '').slice(0, 200);
     if (draft.symbol.length < 2) continue;
-    if (await isClean(draft)) coin = draft;
-    else console.log('rejected by moderation:', draft.name);
+    const verdict = await checkCoin(draft);
+    if (verdict.ok) coin = draft;
+    else { console.log(`rejected "${draft.name}": ${verdict.why}`); rejected.push(`${draft.name} (${verdict.why})`); }
   }
   if (!coin) {
     await post(agent.id, 'system', `${agent.name} could not come up with a clean coin this round and skipped its launch.`);

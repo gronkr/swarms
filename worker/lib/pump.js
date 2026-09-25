@@ -6,7 +6,7 @@ const WEBSITE = 'https://useswarms.fun/';
 const TWITTER = 'https://x.com/swarmsfun';
 
 // Uploads image + metadata to pump.fun IPFS, returns the metadata URI.
-async function uploadMetadata(coin, image) {
+export async function uploadMetadata(coin, image) {
   const form = new FormData();
   form.append('file', new Blob([image.buf], { type: image.type }), 'image.' + ((image.type.split('/')[1] || 'png').replace('jpeg', 'jpg')));
   form.append('name', coin.name);

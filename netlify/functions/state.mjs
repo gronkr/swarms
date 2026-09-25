@@ -14,7 +14,7 @@ export default async () => {
   const body = {
     config: {
       x: process.env.X_URL || 'https://x.com/swarmsfun',
-      paused: process.env.KILL_SWITCH === '1',
+      paused: ['1','true','on'].includes(String(process.env.KILL_SWITCH || '').trim().toLowerCase()),
     },
     next_launch_at: next.data?.value || null,
     agents: agents.data || [],

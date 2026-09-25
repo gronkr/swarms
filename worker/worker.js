@@ -20,7 +20,7 @@ async function tick() {
   if (busy) return;
   busy = true;
   try {
-    if (process.env.KILL_SWITCH === '1') return;
+    if (['1', 'true', 'on'].includes(String(process.env.KILL_SWITCH || '').trim().toLowerCase())) return;
 
     // Scoring every 2 minutes
     if (Date.now() - lastScore > 120_000) {
@@ -52,6 +52,6 @@ if (!booted) {
   await setState('booted', new Date().toISOString());
   await post(null, 'system', 'The colony is awake. First launch incoming.');
 }
-console.log('swarm worker running');
+console.log('swarms worker running');
 tick();
 setInterval(tick, TICK_MS);
