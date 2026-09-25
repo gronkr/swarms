@@ -1,4 +1,6 @@
 // Swarms colony worker. Runs forever on Railway: `npm run worker`.
+
+import './check-env.js';
 import { db, getState, setState, post } from './lib/db.js';
 import { launchNext, debriefDue, evolveIfDue } from './lib/colony.js';
 import { scoreRecent, refreshAgentTotals } from './lib/score.js';

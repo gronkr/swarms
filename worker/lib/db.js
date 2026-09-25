@@ -1,7 +1,9 @@
 import { createClient } from '@supabase/supabase-js';
+import ws from 'ws';
 
 export const db = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_KEY, {
   auth: { persistSession: false },
+  realtime: { transport: ws }, // Node 20 on Railway has no built-in WebSocket
 });
 
 export async function getState(key, fallback = null) {
