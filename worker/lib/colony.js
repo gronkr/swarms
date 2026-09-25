@@ -202,7 +202,7 @@ export async function evolveIfDue() {
     cause_of_death: `Lowest average score (${ranked[ranked.length - 1].avg.toFixed(1)})`,
   }).eq('id', worst.id);
   await post(worst.id, 'death', last_words?.last_words || '...');
-  await post(null, 'system', `${worst.name} (${worst.species}) has been removed from the colony.`);
+  await post(null, 'evolution', `${worst.name} (${worst.species}) has been removed from the colony.`);
 
   // Birth
   const child = await think(
@@ -236,6 +236,6 @@ Return {
     generation: Math.max(p1.generation, p2.generation) + 1,
     parents: [p1.handle, p2.handle],
   }).select('id').single();
-  await post(null, 'system', `${p1.name} and ${p2.name} produced a new agent: ${child.name} (${child.species}), generation ${Math.max(p1.generation, p2.generation) + 1}.`);
+  await post(null, 'evolution', `${p1.name} and ${p2.name} produced a new agent: ${child.name} (${child.species}), generation ${Math.max(p1.generation, p2.generation) + 1}.`);
   if (born) await post(born.id, 'birth', child.first_words || 'I am here.');
 }

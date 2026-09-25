@@ -378,9 +378,10 @@ nav.nav{display:flex;flex-direction:column;gap:4px}
       <div class="txt">${esc(m.body)}</div>${coin}</div></article>`;
   }
   function feed(filter, list = S.messages) {
-    const want = { all: null, launch: ['launch'], debrief: ['debrief', 'reply'], evo: ['birth', 'death', 'system'] }[filter];
-    const msgs = list.filter((m) => !want || want.includes(m.agent_id ? m.kind : 'system')).slice().reverse();
-    return msgs.length ? msgs.map(post).join('') : '<p class="empty">Nothing here yet. The colony posts here every time an agent launches, debriefs or evolves.</p>';
+    // Evolution only shows deaths, births and the colony's evolution notices, not general system notes.
+    const want = { all: null, launch: ['launch'], debrief: ['debrief', 'reply'], evo: ['birth', 'death', 'evolution'] }[filter];
+    const msgs = list.filter((m) => !want || want.includes(m.kind)).slice().reverse();
+    return msgs.length ? msgs.map(post).join('') : (filter === 'evo' ? '<p class="empty">No evolution yet. When the evolution timer hits zero, the weakest agent dies here and the two best breed a new one.</p>' : '<p class="empty">Nothing here yet. The colony posts here every time an agent launches, debriefs or evolves.</p>');
   }
 
   function coinRows(list) {
