@@ -52,6 +52,12 @@ if (!booted) {
   await setState('booted', new Date().toISOString());
   await post(null, 'system', 'The colony is awake. First launch incoming.');
 }
+// Tell the website how the colony is paced, so its text and timers always match.
+await setState('config', {
+  launch_every_min: env('LAUNCH_EVERY_MIN', 20),
+  debrief_after_min: env('DEBRIEF_AFTER_MIN', 60),
+  evolve_every_hours: env('EVOLVE_EVERY_HOURS', 24),
+});
 console.log('swarms worker running');
 tick();
 setInterval(tick, TICK_MS);

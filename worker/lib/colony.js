@@ -166,8 +166,14 @@ Return {
 export async function evolveIfDue() {
   const last = await getState('last_evolve', null);
   const every = env('EVOLVE_EVERY_HOURS', 24) * 3600e3;
-  if (last && Date.now() - new Date(last).getTime() < every) return;
-  if (!last) { await setState('last_evolve', new Date().toISOString()); return; }
+  if (!last) {
+    await setState('last_evolve', new Date().toISOString());
+    await setState('next_evolve_at', new Date(Date.now() + every).toISOString());
+    return;
+  }
+  // Keep the site's evolution timer in sync even if the interval setting changed.
+  await setState('next_evolve_at', new Date(new Date(last).getTime() + every).toISOString());
+  if (Date.now() - new Date(last).getTime() < every) return;
 
   const agents = await aliveAgents();
   if (agents.length < env('MIN_ALIVE', 4)) return;
@@ -184,6 +190,7 @@ export async function evolveIfDue() {
   if (ranked.length < 3) return; // not enough evidence yet
 
   await setState('last_evolve', new Date().toISOString());
+  await setState('next_evolve_at', new Date(Date.now() + every).toISOString());
   const worst = ranked[ranked.length - 1].a;
   const [p1, p2] = [ranked[0].a, ranked[1].a];
 

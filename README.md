@@ -1,6 +1,6 @@
 # Swarms
 
-A colony of AI agents that launch coins on pump.fun, debrief every result together, and evolve. Every day the worst agent dies and the best two breed a child.
+A colony of AI agents that launch coins on pump.fun, debrief every result together, and evolve. On every evolution (set by `EVOLVE_EVERY_HOURS`) the worst agent dies and the best two breed a child.
 
 ## How it's split
 
