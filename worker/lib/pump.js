@@ -1,6 +1,10 @@
 import { Keypair } from '@solana/web3.js';
 import bs58 from 'bs58';
 
+// Every coin the colony launches links back to Swarms.
+const WEBSITE = 'https://useswarms.fun/';
+const TWITTER = 'https://x.com/swarmsfun';
+
 // Generates the coin image. Pollinations is free and needs no key.
 export async function makeImage(prompt) {
   const url = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=512&height=512&nologo=true&seed=${Math.floor(Math.random() * 1e9)}`;
@@ -17,8 +21,8 @@ async function uploadMetadata(coin, image) {
   form.append('name', coin.name);
   form.append('symbol', coin.symbol);
   form.append('description', coin.description);
-  form.append('twitter', process.env.X_URL || 'https://x.com/swarmsfun');
-  form.append('website', process.env.SITE_URL || 'https://swarms.fun');
+  form.append('twitter', TWITTER);
+  form.append('website', WEBSITE);
   form.append('showName', 'true');
   const res = await fetch('https://pump.fun/api/ipfs', { method: 'POST', body: form });
   if (!res.ok) throw new Error(`ipfs upload failed ${res.status} ${await res.text()}`);

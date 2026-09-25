@@ -8,7 +8,7 @@ export async function think(system, user, { temperature = 0.9 } = {}) {
       headers: {
         Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
         'Content-Type': 'application/json',
-        'HTTP-Referer': process.env.SITE_URL || 'https://swarms.fun',
+        'HTTP-Referer': process.env.SITE_URL || 'https://useswarms.fun',
         'X-Title': 'Swarms',
       },
       body: JSON.stringify({
